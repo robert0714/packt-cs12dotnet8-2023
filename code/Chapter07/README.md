@@ -40,6 +40,11 @@ Likewise, if an assembly is compiled as an application, then it has the file ext
 
 Any assembly can reference one or more class library assemblies as dependencies, but you cannot have circular references. So, assembly **B** cannot reference assembly **A** if assembly **A** already references assembly **B**. The compiler will warn you if you attempt to add a dependency reference that would cause a circular reference. Circular references are often a warning sign of poor code design. If you are sure that you need a circular reference, then use an interface to solve it.
 
+#### Microsoft .NET project SDKs
+By default, console applications have a dependency reference on the Microsoft .NET project SDK. This platform contains thousands of types in NuGet packages that almost all applications would need, such as the System.Int32 and System.String types.
+
+When using .NET, you reference the dependency assemblies, NuGet packages, and platforms that [your application needs in a project file](./AssembliesAndNamespaces/).
+
 ### Namespaces and types in assemblies
 Many common .NET types are in the `System.Runtime.dll` assembly. There is not always a one-to-one mapping between assemblies and namespaces. A single assembly can contain many namespaces and a namespace can be defined in many assemblies. You can see the relationship between some assemblies and the namespaces that they supply types for in *Table 7.1*:
 | Assembly                 | Example namespaces                                     | Example types                 |
@@ -62,13 +67,13 @@ The following are the benefits of packages:
 * Packages can have dependencies specific to only one library.
 * Apps are smaller because unreferenced packages aren’t part of the distribution. Table 7.2 lists some of the more important packages and their important types:
   
-| Package              | Important types                   |   |
-|----------------------|-----------------------------------|---|
-| System.Runtime       | Object, String, Int32, Array      |   |
-| System.Collections   | List<T>, Dictionary<TKey, TValue> |   |
-| System.Net.Http      | HttpClient, HttpResponseMessage   |   |
-| System.IO.FileSystem | File, Directory                   |   |
-| System.Reflection    | Assembly, TypeInfo, MethodInfo    |   |
+| Package              | Important types                   | 
+|----------------------|-----------------------------------|
+| System.Runtime       | Object, String, Int32, Array      |
+| System.Collections   | List<T>, Dictionary<TKey, TValue> | 
+| System.Net.Http      | HttpClient, HttpResponseMessage   | 
+| System.IO.FileSystem | File, Directory                   |
+| System.Reflection    | Assembly, TypeInfo, MethodInfo    | 
 
 Table 7.2: Some important packages and their important types
 
@@ -99,7 +104,7 @@ Let’s explore how namespaces are related to assemblies and types:
 3. Click inside the `XDocument` class name. Your code editor displays a light bulb, showing that it recognizes the type and can automatically fix the problem for you.
 4. Click the light bulb, and select `using System.Xml.Linq`; from the menu.
    
-This will import the namespace by adding a `using` statement to the top of the file. Once a namespace is imported at the top of a code file, then all the types within the namespace are available for use in that code file by just typing their name, without the type name needing to be fully qualified by prefixing it with its namespace.
+This will *import the namespace* by adding a `using` statement to the top of the file. Once a namespace is imported at the top of a code file, then all the types within the namespace are available for use in that code file by just typing their name, without the type name needing to be fully qualified by prefixing it with its namespace.
 
 I like to add a comment after importing a namespace to remind me why I need to import that namespace, as shown in the following code:
 ```csharp
@@ -127,7 +132,7 @@ Let’s see this in action with some code:
 3. In AssembliesAndNamespaces.csproj, add an entry to prevent the System namespace from being globally imported, as shown in the following markup:
    ```xml
    <ItemGroup>
-   <Using Remove="System" />
+       <Using Remove="System" />
    </ItemGroup>
    ```
 4. In `Program.cs`, and in the **Error List** or **PROBLEMS** window, note the compiler error message, as shown in the following output:
@@ -188,12 +193,12 @@ Your choice of which .NET Standard version to target comes down to a balance bet
 
 ### Understanding defaults for class libraries with different SDKs
 When using the `dotnet` SDK tool to create a class library, it might be useful to know which target framework will be used by default, as shown in Table 7.4:
-| SDK           | Default target framework for new class libraries |   |   |
-|---------------|--------------------------------------------------|---|---|
-| .NET Core 3.1 | netstandard2.0                                   |   |   |
-| .NET 6        | net6.0                                           |   |   |
-| .NET 7        | net7.0                                           |   |   |
-| .NET 8        | net8.0                                           |   |   |
+| SDK           | Default target framework for new class libraries | 
+|---------------|--------------------------------------------------|
+| .NET Core 3.1 | netstandard2.0                                   |
+| .NET 6        | net6.0                                           |
+| .NET 7        | net7.0                                           |
+| .NET 8        | net8.0                                           | 
  
 Table 7.4: .NET SDKs and their default target framework for new class libraries
 
@@ -219,7 +224,8 @@ We will create a class library using .NET Standard 2.0 so that it can be used ac
    * If you use Visual Studio 2022, when prompted for the **Target Framework**, select **.NET Standard 2.0**, and then configure the startup project for the solution to the current selection.
    * If you use `Visual Studio Code`, include a switch to target .NET Standard 2.0, as shown in the following command:
      ```bash  
-     dotnet new classlib -f netstandard2.0
+     dotnet new classlib -f netstandard2.0 # existed project add referneces
+     dotnet new classlib -f netstandard2.0 -n SharedLibrary # creat new project named 'SharedLibrary' to be referneced
      ```
 > **Good Practice**: If you need to create types that use new features in .NET 8, as well as types that only use .NET Standard 2.0 features, then you can create two separate class libraries: one targeting .NET Standard 2.0 and one targeting .NET 8.
 
